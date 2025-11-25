@@ -10,4 +10,5 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # Add the main executable
 add_executable(cpp_backtester
     src/main.cpp
+    src/DataFeed.cpp
 )
