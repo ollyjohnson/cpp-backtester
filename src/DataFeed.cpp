@@ -2,9 +2,17 @@
 
 #include <stdexcept>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 
 DataFeed::DataFeed(const std::string& filePath) {
-    loadFakeData();
+    try {
+        loadFromCsv(filePath);
+    } catch (const std::exception& ex) {
+        std::cerr << "Failed to load CSV from '" << filePath << "': " << ex.what() << "\n";
+        std::cerr << "Falling back to fake in-memory data.\n";
+        loadFakeData();
+    }
 }
 
 bool DataFeed::hasNext() const {
@@ -25,6 +33,55 @@ void DataFeed::loadFakeData() {
 }
 
 
-void DataFeed::loadFromCsv(const std::string&){
-    
+void DataFeed::loadFromCsv(const std::string& filePath) {
+    std::ifstream file(filePath);
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open file");
+    }
+
+    std::string line;
+
+    if (!std::getline(file, line)) {
+        throw std::runtime_error("File is empty");
+    }
+
+    bars_.clear();
+    currentIndex_ = 0;
+
+    while (std::getline(file, line)) {
+        if (line.empty()) {
+            continue;
+        }
+
+        std::stringstream ss(line);
+
+        std::string dateStr;
+        std::string openStr, highStr, lowStr, closeStr, volumeStr;
+
+        std::getline(ss, dateStr, ',');
+        std::getline(ss, openStr, ',');
+        std::getline(ss, highStr, ',');
+        std::getline(ss, lowStr, ',');
+        std::getline(ss, closeStr, ',');
+        std::getline(ss, volumeStr, ',');
+
+        if (dateStr.empty()) {
+            continue;
+        }
+
+        Bar bar;
+        bar.date = dateStr;
+        bar.open = std::stod(openStr);
+        bar.high = std::stod(highStr);
+        bar.low = std::stod(lowStr);
+        bar.close = std::stod(closeStr);
+        bar.volume = std::stod(volumeStr);
+
+        bars_.push_back(bar);
+    }
+
+    if (bars_.empty()) {
+        throw std::runtime_error("No data rows found in file");
+    }
+
 }
