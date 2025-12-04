@@ -11,4 +11,6 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(cpp_backtester
     src/main.cpp
     src/DataFeed.cpp
+    src/MovingAverageStrategy.cpp
+    src/Broker.cpp
 )
