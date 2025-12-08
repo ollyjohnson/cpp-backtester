@@ -17,6 +17,7 @@ public:
     double getLastEquity() const;
     const std::vector<double>& getEquityCurve() const;
     const std::vector<std::string>& getEquityDates() const;
+    void writeEquityCurve(const std::string& filePath) const;
 
 private:
     double cash_;

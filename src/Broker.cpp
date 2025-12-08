@@ -1,4 +1,6 @@
 #include "Broker.h"
+#include <fstream>
+#include <stdexcept>
 
 Broker::Broker(double initialCash, int tradeSize)
  : cash_(initialCash), 
@@ -8,7 +10,7 @@ Broker::Broker(double initialCash, int tradeSize)
 void Broker::onSignal(Signal signal, const Bar& bar){
     if (signal == Signal::Buy){
         double cost = bar.close * static_cast<double>(tradeSize_);
-        if (cash_ > cost) {
+        if (cash_ >= cost) {
             cash_ -= cost;
             position_ += tradeSize_;
         }
@@ -46,4 +48,17 @@ const std::vector<double>& Broker::getEquityCurve() const {
 
 const std::vector<std::string>& Broker::getEquityDates() const {
     return equityDates_;
+}
+
+void Broker::writeEquityCurve(const std::string& filePath) const {
+    std::ofstream file(filePath);
+    if (!file.is_open()) {
+        throw std::runtime_error("Could not open file");
+    }
+
+    file << "date,equity" << "\n";
+    for(int i=0; i<equityDates_.size(); i++){
+        file << equityDates_[i] << "," << equityCurve_[i] << "\n"; 
+    }
+
 }
