@@ -13,4 +13,5 @@ add_executable(cpp_backtester
     src/DataFeed.cpp
     src/MovingAverageStrategy.cpp
     src/Broker.cpp
+    src/Backtester.cpp
 )

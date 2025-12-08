@@ -2,6 +2,7 @@
 #include "DataFeed.h"
 #include "MovingAverageStrategy.h"
 #include "Broker.h"
+#include "Backtester.h"
 
 int main() {
     
@@ -15,22 +16,13 @@ int main() {
 
     std::cout << "Running backtest...\n";
 
-    while (feed.hasNext()) {
-        const Bar& bar = feed.next();
+    Backtester backtester(feed, strategy, broker);
 
-        Signal signal = strategy.onBar(bar);
-        broker.onSignal(signal, bar);
-        broker.updateEquity(bar);
-
-        std::cout << bar.date 
-            << " close=" << bar.close
-            << " signal=" << (signal == Signal::Buy ? "BUY" : signal == Signal::Sell ? "SELL" : "HOLD")
-            << " cash=" << broker.getCash()
-            << " position=" << broker.getPosition()
-            << " equity=" << broker.getLastEquity() 
-            << "\n";
-    }
+    backtester.run();
 
     std::cout << "Final equity: " << broker.getLastEquity() << "\n";
+    std::cout << "Final cash position: " << broker.getCash()
+              << " postion: " << broker.getPosition() << "\n";
+              
     return 0;
 }

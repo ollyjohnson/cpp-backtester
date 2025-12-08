@@ -8,7 +8,7 @@ Broker::Broker(double initialCash, int tradeSize)
 void Broker::onSignal(Signal signal, const Bar& bar){
     if (signal == Signal::Buy){
         double cost = bar.close * static_cast<double>(tradeSize_);
-        if (cash_ >- cost) {
+        if (cash_ > cost) {
             cash_ -= cost;
             position_ += tradeSize_;
         }
